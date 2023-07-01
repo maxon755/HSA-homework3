@@ -22,3 +22,12 @@ services:
 
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones
+
+    elasticsearch_client_factory:
+        class: Elastic\Elasticsearch\ClientBuilder
+        factory: [null, 'create']
+        calls:
+            - setHosts: [['elasticsearch:9200']]
+
+    Elastic\Elasticsearch\Client:
+        factory: ['@elasticsearch_client_factory', 'build']
