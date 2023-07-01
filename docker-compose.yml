@@ -1,0 +1,22 @@
+version: '3.4'
+
+services:
+  web-server:
+    build:
+      context: .
+      dockerfile: .docker/services/nginx/Dockerfile
+      target: runtime
+    ports:
+      - "80:80"
+    volumes:
+      - ./public:/usr/share/nginx/html
+
+  app:
+    build:
+      context: .
+      dockerfile: .docker/services/php/Dockerfile
+      args:
+        - USER_UID=${USER_UID:-1000}
+        - USER_GID=${USER_GID:-1000}
+    volumes:
+      - .:/var/www/html
