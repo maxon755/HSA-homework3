@@ -2,16 +2,18 @@ version: '3.4'
 
 services:
   web-server:
-    build:
-      context: .
-      dockerfile: .docker/services/nginx/Dockerfile
-      target: runtime
+    container_name: web-server
+    hostname: web-server
+    image: nginx
     ports:
       - "80:80"
     volumes:
       - ./public:/usr/share/nginx/html
+      - .docker/services/nginx/config/:/etc/nginx/conf.d/
 
   app:
+    container_name: app
+    hostname: app
     build:
       context: .
       dockerfile: .docker/services/php/Dockerfile
@@ -38,6 +40,55 @@ services:
     volumes:
       - elasticsearch:/usr/share/elasticsearch/data
 
+  telegraf:
+    build:
+      context: .
+      dockerfile: .docker/services/telegraf/Dockerfile
+      args:
+        - USER_UID=${USER_UID:-1000}
+        - USER_GID=${DOCKER_GID:-1000}
+    volumes:
+      - .docker/services/telegraf/config/telegraf.conf:/etc/telegraf/telegraf.conf:ro
+      - /var/run/docker.sock:/var/run/docker.sock
+    depends_on:
+      - influxdb
+    links:
+      - influxdb
+    ports:
+      - '8125:8125'
+
+  influxdb:
+    image: influxdb:1.8-alpine
+    environment:
+      - INFLUXDB_DB=influx
+      - INFLUXDB_ADMIN_USER=admin
+      - INFLUXDB_ADMIN_PASSWORD=admin
+    ports:
+      - '8086:8086'
+    volumes:
+      - influxdb:/var/lib/influxdb
+
+  grafana:
+    image: grafana/grafana
+    depends_on:
+      - influxdb
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+      - GF_INSTALL_PLUGINS=grafana-piechart-panel
+    links:
+      - influxdb
+    ports:
+      - '3000:3000'
+    volumes:
+      - grafana:/var/lib/grafana
+      - .docker/services/grafana/provisioning/:/etc/grafana/provisioning/
+      - .docker/services/grafana/dashboards/:/var/lib/grafana/dashboards/
+
 volumes:
   elasticsearch:
+    driver: local
+  grafana:
+    driver: local
+  influxdb:
     driver: local

@@ -11,7 +11,7 @@ RUN apt-get update --fix-missing \
 
 ADD https://github.com/mlocati/docker-php-extension-installer/releases/latest/download/install-php-extensions /usr/local/bin/
 
-ADD .docker/services/php/bin /usr/local/bin/
+ADD .docker/services/bin /usr/local/bin/
 
 # extensions
 RUN chmod +x /usr/local/bin/install-php-extensions && \
