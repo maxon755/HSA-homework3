@@ -2,8 +2,6 @@ version: '3.4'
 
 services:
   web-server:
-    container_name: web-server
-    hostname: web-server
     image: nginx
     ports:
       - "80:80"
@@ -12,8 +10,6 @@ services:
       - .docker/services/nginx/config/:/etc/nginx/conf.d/
 
   app:
-    container_name: app
-    hostname: app
     build:
       context: .
       dockerfile: .docker/services/php/Dockerfile
