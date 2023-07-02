@@ -31,3 +31,7 @@ services:
 
     Elastic\Elasticsearch\Client:
         factory: ['@elasticsearch_client_factory', 'build']
+
+    MongoDB\Client:
+        arguments:
+            - 'mongodb://root:pass@mongo:27017'
