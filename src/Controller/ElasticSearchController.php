@@ -13,7 +13,7 @@ class ElasticSearchController extends AbstractController
     {
     }
 
-    #[Route('/elastic', methods: ['GET'])]
+    #[Route('/elastic', methods: ['POST'])]
     public function createDocument(): Response
     {
         $params = [

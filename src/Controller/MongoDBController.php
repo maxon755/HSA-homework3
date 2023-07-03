@@ -13,7 +13,7 @@ class MongoDBController extends AbstractController
     {
     }
 
-    #[Route('/mongo', methods: ['GET'])]
+    #[Route('/mongo', methods: ['POST'])]
     public function createDocument(): Response
     {
         $collection = $this->client->test->users;

@@ -1,7 +1,6 @@
 FROM telegraf
 
-ARG USER_UID=33
-ARG USER_GID=33
+ARG DOCKER_GID=963
 
 ADD .docker/services/bin /usr/local/bin/
 

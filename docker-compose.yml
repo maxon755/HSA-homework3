@@ -10,6 +10,8 @@ services:
       - .docker/services/nginx/config/:/etc/nginx/conf.d/
     depends_on:
       - app
+    networks:
+      - haiduk_homework3
 
   app:
     build:
@@ -23,6 +25,8 @@ services:
     depends_on:
       - elasticsearch
       - mongo
+    networks:
+      - haiduk_homework3
 
   elasticsearch:
     image: docker.elastic.co/elasticsearch/elasticsearch:8.8.2
@@ -40,6 +44,8 @@ services:
       - "9200:9200"
     volumes:
       - elasticsearch:/usr/share/elasticsearch/data
+    networks:
+      - haiduk_homework3
 
   mongo:
     image: mongo
@@ -48,6 +54,8 @@ services:
       MONGO_INITDB_ROOT_PASSWORD: pass
     volumes:
       - mongo:/data/db
+    networks:
+      - haiduk_homework3
 
   mongo-express:
     image: mongo-express
@@ -59,14 +67,15 @@ services:
       ME_CONFIG_MONGODB_URL: mongodb://root:pass@mongo:27017/
     depends_on:
       - mongo
+    networks:
+      - haiduk_homework3
 
   telegraf:
     build:
       context: .
       dockerfile: .docker/services/telegraf/Dockerfile
       args:
-        - USER_UID=${USER_UID:-1000}
-        - USER_GID=${DOCKER_GID:-1000}
+        - DOCKER_GID=${DOCKER_GID:-963}
     volumes:
       - .docker/services/telegraf/config/telegraf.conf:/etc/telegraf/telegraf.conf:ro
       - /var/run/docker.sock:/var/run/docker.sock
@@ -80,6 +89,8 @@ services:
       - influxdb
     ports:
       - '8125:8125'
+    networks:
+      - haiduk_homework3
 
   influxdb:
     image: influxdb:1.8-alpine
@@ -91,6 +102,8 @@ services:
       - '8086:8086'
     volumes:
       - influxdb:/var/lib/influxdb
+    networks:
+      - haiduk_homework3
 
   grafana:
     image: grafana/grafana
@@ -108,6 +121,8 @@ services:
       - grafana:/var/lib/grafana
       - .docker/services/grafana/provisioning/:/etc/grafana/provisioning/
       - .docker/services/grafana/dashboards/:/var/lib/grafana/dashboards/
+    networks:
+      - haiduk_homework3
 
 volumes:
   elasticsearch:
@@ -118,3 +133,8 @@ volumes:
     driver: local
   influxdb:
     driver: local
+
+
+networks:
+  haiduk_homework3:
+    name: haiduk_homework3
